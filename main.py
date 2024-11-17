@@ -1,7 +1,6 @@
 from typing import Dict, List
-from autogen import ConversableAgent
-from autogen import GroupChat
-from autogen import GroupChatManager
+from autogen import UserProxyAgent, ConversableAgent, AssistantAgent
+from autogen import GroupChat, GroupChatManager
 import autogen
 import numpy as np
 import sys
@@ -35,24 +34,53 @@ def main(user_query: str):
     #                                     system_message=case_context_agent_system_message, 
     #                                     llm_config=llm_config)
 
-    # define different agents
-    case_context_agent = ConversableAgent(
+    ### Define different agents
+    user_proxy = UserProxyAgent(
+        name="User_Proxy",
+        code_execution_config={"use_docker": False},
+        human_input_mode="NEVER",
+        default_auto_reply="",
+        is_termination_msg=lambda x: True,
+    )
+    
+    # using AssistantAgent because it never requires human input
+    case_context_agent = AssistantAgent(
         name="Case_Context_Agent",
         system_message="You are a case context agent that will fetch a case study from database randomly by using the registered tool, return the description of the case study to user for now.",
         llm_config=llm_config,
         human_input_mode="NEVER",
     )
-
-    question_context_agent = ConversableAgent(
-        name="Question_Context_Agent",
+    case_context_agent_generate = AssistantAgent(
+        name="Case_Context_Agent",
+        system_message="You are a case context agent that will generate a case study based on user's choice of industry. Add TERMINATE at the very end when complete.",
+        llm_config=llm_config,
+        human_input_mode="NEVER",
+        code_execution_config = False,
+        function_map = None,
+        is_termination_msg=lambda msg: "terminate" in msg["content"].lower(),
+    )
+    
+    # using ConversableAgent
+    question_agent = ConversableAgent(
+        name="Question_Agent",
         system_message="You are a question agent, you will ask one question at a time and await user responses. If the current case study has provided questions, ask question from these given questions first.",
         llm_config=llm_config,
         human_input_mode="ALWAYS",
     )
+    question_agent_generated = ConversableAgent(
+        name="Question_Agent",
+        system_message="""You are a question agent, a question will be asked to the interviewee and a response will be provided. If the interviewee's response is unclear, you can ask for follow up questions.
+                        If a follow up question is needed, ask it. If not reply with: TERMINATE.""",
+        llm_config=llm_config,
+        human_input_mode="ALWAYS",
+        is_termination_msg=lambda msg: "TERMINATE" in msg["content"],
+    )
 
-    feedback_agent = ConversableAgent(
+
+    # using AssistantAgent because it never requires human input
+    feedback_agent = AssistantAgent(
         name="Feedback_Agent",
-        system_message="You provide feedback on the user's responses to the questions based on the case study.",
+        system_message="As the feedback agent, provide feedback on the user's responses to the questions based on the context provided in the case study.",
         llm_config=llm_config,
         human_input_mode="NEVER",
     )
@@ -62,30 +90,55 @@ def main(user_query: str):
     case_context_agent.register_for_execution(name="fetch_case_study_data")(fetch_case_study_data)
 
     case_context_agent.description = "Retrieve a case study from our data."
-    question_context_agent.description = "Ask questions based on the case study."
+    case_context_agent_generate.description = "Generate a case study based on user's choice of industry."
+    question_agent.description = "Ask questions based on the case study."
     feedback_agent.description = "Provide feedback based on user's responses."
 
-    # Set up group chat and manager
-    group_chat = GroupChat(
-        agents=[case_context_agent, question_context_agent, feedback_agent],
-        messages=[],
-        speaker_selection_method="manual", # since currently manager needs to converse with question agent multiple times
-        max_round=6,
+    # Initiate the Interview
+    # Step 1: Obtain the Case Study: two options (1) Fetch from database, (2) Generate on the fly
+    # (2)
+    ### TODO: in the case of generate on the fly, we need user choice on a list of predetermined fields
+    user_choice_of_field = "Rocketry"
+    cca_msg = f"Generate a case study interview context in the {user_choice_of_field} industry. After generating the context, put a separator #$% and then generate the questions with separator #*# between each question. Limit to less than 6 questions."
+    cca_result = user_proxy.initiate_chat(
+        case_context_agent_generate,
+        message=cca_msg,
+        code_execution_config=False,
+        max_turns=1,
+        # summary_method="last_msg",
     )
-
-    group_chat_manager = GroupChatManager(
-        groupchat=group_chat,
-        llm_config=llm_config,
-    )
-
-    # begin the conversation
-    initial_message = "Please start the case study interview with a case study."
-    chat_result = case_context_agent.initiate_chat(
-        group_chat_manager,
-        message=initial_message,
-        summary_method="reflection_with_llm",
-    )
-
+    
+    # print("\nchat_result:", cca_result)
+    # print("\nagent.chat_messages:", cca_result.chat_history)
+    # print("\nresponse:", cca_result.chat_history[1]["content"])
+    context_and_questions = cca_result.chat_history[1]["content"].split("#$%")
+    context = context_and_questions[0]
+    questions = context_and_questions[1].split("#*#")
+    questions_num = len(questions)
+    
+    ### TODO: Display context to user (in the final iteration we use TTS to convey with audio)
+    
+    # Step 2: QNA by User and Question_Agent
+    interview_log = []
+    response = []
+    cnt = 0
+    while cnt != questions_num:
+        question = questions[cnt]
+        termination_flag = 0
+        while not termination_flag:
+            interview_log.append(question)
+            ### TODO: Play the audio of question to user here
+            
+            ### TODO: Get user's response, using something like Whisper
+            response.append("I'm not sure... I think I could do A then B then C and make the company succeed.")
+            followup_question = user_proxy.initiate_chat(question_agent_generated, response[0])
+            termination_flag = followup_question.chat_history[1]["content"].contains("TERMINATE")
+            question = followup_question.chat_history[1]["content"]
+        cnt += 1
+    
+    # Step 3: Feedback Agent provides feedback
+    
+    
     return
 
 if __name__ == "__main__":
