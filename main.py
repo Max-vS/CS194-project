@@ -122,23 +122,36 @@ def main(user_query: str):
     interview_log = []
     response = []
     cnt = 0
-    while cnt != questions_num:
+    max_followups = 2  # Limit number of clarification questions per main question
+    while cnt < questions_num:
         question = questions[cnt]
-        termination_flag = 0
-        while not termination_flag:
+        followup_attempts = 0
+        termination_flag = False
+        print(f"Question {cnt + 1}: {question}")  # Display the question
+        
+        while not termination_flag and followup_attempts <= max_followups:
             interview_log.append(question)
             ### TODO: Play the audio of question to user here
             
-            ### TODO: Get user's response, using something like Whisper
-            response.append("I'm not sure... I think I could do A then B then C and make the company succeed.")
-            followup_question = user_proxy.initiate_chat(question_agent_generated, response[0])
-            termination_flag = followup_question.chat_history[1]["content"].contains("TERMINATE")
-            question = followup_question.chat_history[1]["content"]
+            ### Get the user's response (simulated here)
+            user_response = "I'm not sure... I think I could do A then B then C and make the company succeed."
+            response.append(user_response)
+            
+            followup_question = user_proxy.initiate_chat(question_agent_generated, user_response)
+            followup_msg = followup_question.chat_history[1]["content"]
+            if "TERMINATE" in followup_msg.upper():  # Check for termination
+                termination_flag = True
+            elif followup_attempts < max_followups:  # Allow limited follow-ups
+                question = followup_msg
+                followup_attempts += 1
+                print(f"Follow-up Question: {question}")
+            else:  # Exceeded follow-up attempts, move to the next question
+                print("Moving to the next question...")
+                termination_flag = True
+        
         cnt += 1
     
-    # Step 3: Feedback Agent provides feedback
-    
-    
+    # Feedback agent can be implemented here
     return
 
 if __name__ == "__main__":
