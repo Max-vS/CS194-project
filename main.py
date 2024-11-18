@@ -9,6 +9,7 @@ import re
 import json
 import random
 from dotenv import load_dotenv
+from audio import play_audio, record_audio, transcribe_audio
 
 
 
@@ -128,16 +129,20 @@ def main(user_query: str):
         followup_attempts = 0
         termination_flag = False
         print(f"Question {cnt + 1}: {question}")  # Display the question
-        
         while not termination_flag and followup_attempts <= max_followups:
             interview_log.append(question)
             ### TODO: Play the audio of question to user here
-            
-            ### Get the user's response (simulated here)
-            user_response = "I'm not sure... I think I could do A then B then C and make the company succeed."
-            response.append(user_response)
-            
-            followup_question = user_proxy.initiate_chat(question_agent_generated, user_response)
+            print("Playing question audio...")
+            play_audio(question)
+            ### TODO: Get user's response, using something like Whisper
+            print("Listening to user's response...")
+            audio_file = record_audio()
+            response_text = transcribe_audio(audio_file)
+            response.append(response_text)
+            print(f"User response: {response_text}")
+
+            # response.append("I'm not sure... I think I could do A then B then C and make the company succeed.")
+            followup_question = user_proxy.initiate_chat(question_agent_generated, response[0])
             followup_msg = followup_question.chat_history[1]["content"]
             if "TERMINATE" in followup_msg.upper():  # Check for termination
                 termination_flag = True
@@ -148,10 +153,15 @@ def main(user_query: str):
             else:  # Exceeded follow-up attempts, move to the next question
                 print("Moving to the next question...")
                 termination_flag = True
-        
+
         cnt += 1
-    
-    # Feedback agent can be implemented here
+
+        # Feedback agent can be implemented here
+        return
+
+    # Step 3: Feedback Agent provides feedback
+    print("Interview terminated.")
+
     return
 
 if __name__ == "__main__":
