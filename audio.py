@@ -5,18 +5,26 @@ import tempfile
 import os
 import sounddevice as sd
 import wavio
+import pyttsx3
 
 # Initialize Whisper model (you may choose different models like "small", "medium", etc.)
 whisper_model = whisper.load_model("base")
 
-def play_audio(text):
-    """Convert text to speech and play it."""
-    tts = gTTS(text=text, lang="en")
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as fp:
-        audio_path = fp.name
-        tts.save(audio_path)
-    playsound(audio_path)
-    os.remove(audio_path)
+# def play_audio(text):
+#     """Convert text to speech and play it."""
+#     tts = gTTS(text=text, lang="en")
+#     with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as fp:
+#         audio_path = fp.name
+#         tts.save(audio_path)
+#     playsound(audio_path)
+#     os.remove(audio_path)
+
+def play_audio(text, speed=200):
+    """Convert text to speech with adjustable speed and play it."""
+    engine = pyttsx3.init()
+    engine.setProperty('rate', speed)  # Default is usually ~150-200 words per minute
+    engine.say(text)
+    engine.runAndWait()
 
 def record_audio(duration=5, filename="user_response.wav"):
     """Record audio from user and save it to a file."""
