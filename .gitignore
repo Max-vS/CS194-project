@@ -2,3 +2,4 @@
 .vscode/settings.json
 .cache/41/cache.db
 agents/InterviewManager.py
+.DS_Store
