@@ -181,7 +181,7 @@ def main(user_query: str):
             # response.append(response_text)
             # print(f"User response: {response_text}")
             # response.append("I'm not sure... I think I could do A then B then C and make the company succeed.")
-            followup_question = user_proxy.initiate_chat(question_agent_generated, message=y[-1])
+            followup_question = user_proxy.initiate_chat(question_agent_generated, message=response[-1])
             followup_msg = followup_question.chat_history[1]["content"]
             if "TERMINATE" in followup_msg.upper():  # Check for termination
                 termination_flag = True
