@@ -8,3 +8,5 @@ agents/__pycache__/entrypoint_agent.cpython-310.pyc
 agents/__pycache__/feedback_agent.cpython-310.pyc
 agents/__pycache__/question_agent.cpython-310.pyc
 .gitignore
+__pycache__/audio.cpython-310.pyc
+data/user_response/response_to_question_1.wav
