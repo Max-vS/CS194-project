@@ -2,3 +2,9 @@
 .vscode/settings.json
 .cache/41/cache.db
 agents/InterviewManager.py
+agents/__pycache__/__init__.cpython-310.pyc
+agents/__pycache__/case_context_agent.cpython-310.pyc
+agents/__pycache__/entrypoint_agent.cpython-310.pyc
+agents/__pycache__/feedback_agent.cpython-310.pyc
+agents/__pycache__/question_agent.cpython-310.pyc
+.gitignore
