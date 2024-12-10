@@ -11,8 +11,6 @@ import random
 from dotenv import load_dotenv
 from audio import play_audio, record_audio, transcribe_audio
 
-
-
 def fetch_case_study_data() -> Dict[str, List[str]]:
     output = {}
     with open('data/data.json', 'r') as file:
@@ -40,9 +38,28 @@ def main(user_query: str):
         name="User_Proxy",
         code_execution_config={"use_docker": False},
         human_input_mode="NEVER",
-        default_auto_reply="",
+        default_auto_reply=None,
         is_termination_msg=lambda x: True,
     )
+
+    def provide_feedback(interview_log, responses):
+        print("\nGenerating feedback...")
+        feedback_input = (
+            f"Interview Log:\n{interview_log}\n\n"
+            f"User Responses:\n{responses}\n\n"
+            "Provide feedback on the user's responses based on the questions asked."
+        )
+
+        feedback_result = user_proxy.initiate_chat(
+            feedback_agent,
+            message=feedback_input,
+            code_execution_config=False,
+            max_turns=1,
+        )
+
+        feedback_message = feedback_result.chat_history[1]["content"]
+        print(f"\nFeedback Summary:\n{feedback_message}")
+        return feedback_message
     
     # using AssistantAgent because it never requires human input
     case_context_agent = AssistantAgent(
@@ -124,6 +141,7 @@ def main(user_query: str):
     response = []
     cnt = 0
     max_followups = 2  # Limit number of clarification questions per main question
+    # print("question_number", questions_num)
     while cnt < questions_num:
         question = questions[cnt]
         followup_attempts = 0
@@ -137,12 +155,33 @@ def main(user_query: str):
             ### TODO: Get user's response, using something like Whisper
             print("Listening to user's response...")
             audio_file = record_audio()
-            response_text = transcribe_audio(audio_file)
-            response.append(response_text)
-            print(f"User response: {response_text}")
+            # response_text = transcribe_audio(audio_file)
+            if audio_file:  # Check if audio was recorded
+                # Transcribe audio
+                transcribed_text = transcribe_audio(audio_file)
+                print(f"Transcribed audio response: {transcribed_text}")
+                # Ask the user if they want to correct the transcription
+                correction_needed = input(f"Is the transcription correct? (y/n): ").strip().lower()
+                if correction_needed == 'n':
+                    # Allow the user to manually enter the corrected response
+                    corrected_text = input("Please enter your corrected response: ").strip()
+                    response.append(corrected_text)  # Append the corrected response
+                    print(f"User corrected text response: {corrected_text}")
+                else:
+                    # Use the transcribed text if no correction is needed
+                    response.append(transcribed_text)  # Append the transcribed response
+                    print(f"User accepted transcribed response: {transcribed_text}")
+            else:
+                print("No audio recorded, asking for text input...")
+                # If no audio is recorded, manually capture text response
+                text_response = input("Please enter your response: ").strip()
+                response.append(text_response)
+                print(f"User text response: {text_response}")
 
+            # response.append(response_text)
+            # print(f"User response: {response_text}")
             # response.append("I'm not sure... I think I could do A then B then C and make the company succeed.")
-            followup_question = user_proxy.initiate_chat(question_agent_generated, response[0])
+            followup_question = user_proxy.initiate_chat(question_agent_generated, message=response[-1])
             followup_msg = followup_question.chat_history[1]["content"]
             if "TERMINATE" in followup_msg.upper():  # Check for termination
                 termination_flag = True
@@ -155,9 +194,8 @@ def main(user_query: str):
                 termination_flag = True
 
         cnt += 1
-
+    provide_feedback(interview_log, response)
         # Feedback agent can be implemented here
-        return
 
     # Step 3: Feedback Agent provides feedback
     print("Interview terminated.")
