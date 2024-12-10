@@ -49,8 +49,7 @@ class QuestionAgent:
 
         # Check if chat_history has enough entries
         if not qa_result.chat_history or len(qa_result.chat_history) < 2:
-            print("No response from QuestionAgent or insufficient chat history.")
-            return {"followup_question": "No response received, please need to speak up!", "terminate": False}
+            return {"followup_question": "No response received, please elaborate.", "terminate": False}
         
         # Parse result from Question Agent
         ### Example response:
@@ -68,6 +67,6 @@ class QuestionAgent:
         
         if "TERMINATE" in agent_response.upper():
             return {"followup_question": None, "terminate": True}
-        return {"followup_question": agent_response, "terminate": False}
+        return {"followup_question": agent_response.strip(), "terminate": False}
     
     
