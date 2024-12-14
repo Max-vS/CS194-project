@@ -4,7 +4,17 @@ from config.settings import LLM_CONFIG
 from .agent_configs import AgentType
 
 def create_group_chat(agents: Dict[AgentType, any]):
+    """
+    Creates a managed group chat with defined state transitions between agents.
+    The conversation flow follows:
+    INIT -> CCA -> QA -> USER -> QA -> FA
+    """
+    
     def state_transition(last_speaker, groupchat: GroupChat):
+        """
+        Determines the next speaking agent based on the last speaker
+        and conversation state. Returns None to end conversation.
+        """
         messages = groupchat.messages
 
         if last_speaker is agents[AgentType.INIT]:

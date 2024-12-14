@@ -4,7 +4,7 @@ import tempfile
 import streamlit as st
 from audiorecorder import audiorecorder
 
-# Add project root to Python path
+# Configure Python path to allow imports from project root
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Local imports
@@ -15,13 +15,14 @@ from utils.audio import st_play_audio_openai, st_transcribe_audio
 from config.settings import FOI_OPTIONS
 
 def run_streamlit_app():
+    # Configure Streamlit page settings
     st.set_page_config(
         page_title="CasePilot - Case Interview Practice", layout="wide")
 
     st.title("CasePilot - Case Interview Practice")
     st.markdown("---")
 
-    # Initialize session state
+    # Initialize session state with agents and chat manager
     if 'messages' not in st.session_state:
         st.session_state.messages = []
         st.session_state.current_response = ""
@@ -32,7 +33,7 @@ def run_streamlit_app():
         st.session_state.manager = create_group_chat(st.session_state.agents)
         st.session_state.chat_started = False
 
-    # Industry selection
+    # Display industry selection or interview interface
     if not st.session_state.chat_started:
         st.markdown("## Step 1: Industry Selection")
         st.markdown("Select your industry of interest and we'll initiate the interview.")
@@ -56,47 +57,41 @@ def run_streamlit_app():
         st.markdown("## Step 2: Interview in Progress")
         st.markdown("Listen to the questions and record your responses.")
 
-    # Display chat messages
+    # Render chat history with audio playback
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.write(message["content"])
             if message.get("audio_path"):
                 st.audio(message["audio_path"])
 
-    # Handle user input
+    # Handle audio recording and response processing
     if st.session_state.chat_started:
-        # Audio recording
         audio = audiorecorder("Click to record your response")
 
         if len(audio) > 0:
-            # Save and process audio
+            # Process recorded audio and get AI response
             with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_audio:
                 audio.export(temp_audio.name, format="wav")
 
-            # Display audio playback
             st.audio(audio.export().read())
-
-            # Transcribe audio
             transcription = st_transcribe_audio(temp_audio.name)
+            
             if transcription:
                 user_message = transcription['text']
-
-                # Add user message to chat
+                
+                # Update chat with user response and AI reply
                 st.session_state.messages.append({
                     "role": "user",
                     "content": user_message
                 })
 
-                # Get AI response
                 response = st.session_state.manager.send(
                     user_message,
                     st.session_state.agents[AgentType.USER]
                 )
 
-                # Generate audio for AI response
                 audio_path = st_play_audio_openai(response)
 
-                # Add AI message to chat
                 st.session_state.messages.append({
                     "role": "assistant",
                     "content": response,
@@ -104,7 +99,6 @@ def run_streamlit_app():
                 })
 
                 st.rerun()
-
 
 if __name__ == "__main__":
     run_streamlit_app()

@@ -1,18 +1,21 @@
+# Defines the core agent types and their configurations for the case interview system
 from dataclasses import dataclass
 from typing import Optional, Literal
 from enum import Enum
 
 
 class AgentType(Enum):
-    INIT = "init"
-    CCA = "case_context_agent"
-    QA = "question_agent"
-    FA = "feedback_agent"
-    USER = "user_proxy"
+    """Enum defining the different types of agents in the system"""
+    INIT = "init"  # Initializes the case interview
+    CCA = "case_context_agent"  # Generates case study context
+    QA = "question_agent"  # Manages questions and follow-ups
+    FA = "feedback_agent"  # Provides feedback on responses
+    USER = "user_proxy"  # Handles user interactions
 
 
 @dataclass
 class AgentConfig:
+    """Configuration dataclass for agent initialization"""
     name: AgentType
     description: str
     system_message: Optional[str] = None
