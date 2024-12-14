@@ -31,12 +31,48 @@ env/
 *.swp
 *.swo
 
-# Project specific
-.DS_Store
-.cache/
-data/user_response/
+# Streamlit
+.streamlit/
+.streamlit.cache/
+
+# Audio files
 *.wav
 *.mp3
 
+# Temp files
+tmp/
+temp/
+*.tmp
+
+# Whisper model cache
+*.pt
+whisper/
+whisper.cache/
+
 # Logs
 *.log
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Cache files
+.cache/
+*.cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+.hypothesis/
+.tox/
+nosetests.xml
+coverage/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# Local development
+local_settings.py
+db.
