@@ -1,13 +1,42 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+ENV/
+env/
 .env
-.vscode/settings.json
-.cache/41/cache.db
-agents/InterviewManager.py
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Project specific
 .DS_Store
-__pycache__/audio.cpython-310.pyc
-agents/__pycache__/__init__.cpython-310.pyc
-agents/__pycache__/case_context_agent.cpython-310.pyc
-agents/__pycache__/entrypoint_agent.cpython-310.pyc
-agents/__pycache__/feedback_agent.cpython-310.pyc
-agents/__pycache__/question_agent.cpython-310.pyc
-data/user_response/response_to_question_1.wav
-utils/__pycache__/audio.cpython-310.pyc
+.cache/
+data/user_response/
+*.wav
+*.mp3
+
+# Logs
+*.log

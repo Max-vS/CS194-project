@@ -2,7 +2,7 @@ import sys
 from autogen import AssistantAgent, GroupChat, GroupChatManager, UserProxyAgent
 
 from agents import CustomUserProxy
-from config.setting import LLM_CONFIG
+from config.settings import LLM_CONFIG
 from data.system_messages import case_context_agent_sys_msg, question_agent_sys_msg, feedback_agent_sys_msg
 
 initializer = UserProxyAgent(
