@@ -2,21 +2,10 @@ from gtts import gTTS
 import whisper
 import tempfile
 import os
-import pyttsx3
 from openai import OpenAI
 
 # Initialize Whisper model (you may choose different models like "small", "medium", etc.)
 whisper_model = whisper.load_model("base")
-
-
-# def play_audio(text):
-#     """Convert text to speech and play it."""
-#     tts = gTTS(text=text, lang="en")
-#     with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as fp:
-#         audio_path = fp.name
-#         tts.save(audio_path)
-#     playsound(audio_path)
-#     os.remove(audio_path)
 
 
 def st_play_audio(text):
@@ -43,15 +32,14 @@ def st_play_audio_openai(text):
     return filepath
 
 
-def transcribe_audio(filename="user_response.wav"):
-    """Transcribe audio response from user using Whisper."""
+def st_transcribe_audio(filename):
     if not os.path.exists(filename):
         print(f"Error: {
               filename} not found. Please ensure the recording was saved correctly.")
         return ""
     try:
-        transcription = whisper_model.transcribe(filename, language='en')
-        return transcription['text']
+        whisper_stt = whisper_model.transcribe(filename, language='en')
+        return whisper_stt
     except FileNotFoundError:
         print("Audio file not found. Please ensure recording is working.")
         return ""

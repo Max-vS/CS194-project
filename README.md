@@ -38,7 +38,14 @@ Activate the environment:
 ```bash
 conda activate project_casepilot
 ```
-Install the required packages:
+
+Install ffmpeg (required for audio processing):
+
+```bash
+conda install ffmpeg -c conda-forge
+```
+
+Install other required packages:
 
 ```bash
 pip install -r requirements.txt

@@ -12,9 +12,6 @@ from audiorecorder import audiorecorder
 # Configure Python path to allow imports from project root
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Local imports
-
-
 def initialize_session_state():
     """Initialize all required session state variables if they don't exist"""
     if not hasattr(st.session_state, 'initialized'):
