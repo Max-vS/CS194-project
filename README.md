@@ -39,6 +39,8 @@ Activate the environment:
 conda activate project_casepilot
 ```
 
+**Make sure to also activate the environment in your IDE**
+
 Install ffmpeg (required for audio processing):
 
 ```bash
