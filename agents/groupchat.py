@@ -7,7 +7,7 @@ def create_group_chat(agents: Dict[AgentType, any]):
     """
     Creates a managed group chat with defined state transitions between agents.
     The conversation flow follows:
-    INIT -> CCA -> QA -> USER -> QA -> FA
+    INIT -> CCA -> (QA <-> USER) -> FA
     """
     
     def state_transition(last_speaker, groupchat: GroupChat):
