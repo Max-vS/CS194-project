@@ -31,9 +31,9 @@ def initialize_session_state():
 def run_streamlit_app():
     # Configure Streamlit page settings
     st.set_page_config(
-        page_title="CasePilot - Case Interview Practice", layout="wide")
+        page_title="CasePilot: Case Interview Platform", layout="wide")
 
-    st.title("CasePilot - Case Interview Practice")
+    st.title("CasePilot - Case Interview Platform")
     st.markdown("---")
 
     # Initialize session state
@@ -101,9 +101,9 @@ def run_streamlit_app():
                         message["content"].startswith("QUESTION") or
                         message["content"].startswith("FOLLOW-UP")
                     ):
-                        st.markdown(st_play_audio_openai_64(message["content"]), unsafe_allow_html=True)
-                        # question_tts = st_play_audio_openai(message['content'])     # openai alloy
-                        # question_tts = st_play_audio(message["content"])          # gtts
+                        st.markdown(st_play_audio_openai_64(message["content"]), unsafe_allow_html=True)    # openai alloy autoplay=True
+                        # question_tts = st_play_audio_openai(message['content'])                           # openai alloy
+                        # question_tts = st_play_audio(message["content"])                                  # gtts
                         # st.audio(question_tts, format="mp3", autoplay=1)
 
                     if message["name"] == "feedback_agent":
