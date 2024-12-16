@@ -71,8 +71,7 @@ def run_streamlit_app():
             agents = st.session_state.agents
             chat_result = agents[AgentType.INIT].initiate_chat(
                 st.session_state.manager,
-                message=f"Generate a case study context for the {
-                    st.session_state.foi} industry.",
+                message=f"Generate a case study context for the {st.session_state.foi} industry.",
             )
 
             st.session_state.chat_history = chat_result.chat_history
@@ -107,7 +106,7 @@ def run_streamlit_app():
                         message["content"].startswith("FOLLOW-UP")
                     ):
                         question_tts = st_play_audio(message["content"])
-                        st.audio(question_tts, format="mp3", autoplay=0)
+                        st.audio(question_tts, format="mp3", autoplay=1)
 
                     if message["name"] == "feedback_agent":
                         st.session_state.status = "feedback"
