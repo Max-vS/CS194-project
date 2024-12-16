@@ -34,7 +34,7 @@ def create_group_chat(agents: Dict[AgentType, any]):
     groupchat = GroupChat(
         agents=list(agents.values()),
         messages=[],
-        max_round=20,
+        max_round=30,
         speaker_selection_method=state_transition,
     )
 

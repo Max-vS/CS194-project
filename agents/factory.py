@@ -3,7 +3,6 @@ Agent factory module that centralizes agent creation with consistent configurati
 Supports both assistant and user proxy agent types.
 """
 
-from agents import CustomUserProxy
 from agents.agent_configs import AGENT_CONFIGS, AgentType
 from autogen import AssistantAgent, UserProxyAgent
 from config.settings import LLM_CONFIG
@@ -11,12 +10,17 @@ from config.settings import LLM_CONFIG
 def create_agent(agent_type: AgentType):
     """
     Factory function that creates and configures agents based on their type.
-    Returns either a CustomUserProxy or an appropriate AssistantAgent.
+    Returns either a UserProxyAgent or an appropriate AssistantAgent.
     """
     config = AGENT_CONFIGS[agent_type]
     
     if agent_type == AgentType.USER:
-        return CustomUserProxy()
+        return UserProxyAgent(
+            name=config.name.value,
+            human_input_mode="NEVER",
+            code_execution_config={"use_docker": False},
+            is_termination_msg=lambda _: True,
+        )
     
     agent_class = UserProxyAgent if agent_type == AgentType.INIT else AssistantAgent
     

@@ -1,4 +1,3 @@
-# Defines the core agent types and their configurations for the case interview system
 from dataclasses import dataclass
 from typing import Optional, Literal
 from enum import Enum
@@ -66,11 +65,11 @@ AGENT_CONFIGS = {
     AgentType.USER: AgentConfig(
         name=AgentType.USER,
         description="User proxy agent for handling human interactions",
-        human_input_mode="ALWAYS"
+        human_input_mode="ALWAYS",
     ),
     AgentType.CCA: AgentConfig(
         name=AgentType.CCA,
-        description="You are a case context agent that will generate a case study based on user's choice of industry.",
+        description="You are a case context agent that will generate a case study based on the user's choice of industry.",
         system_message=SYSTEM_MESSAGES[AgentType.CCA],
     ),
     AgentType.QA: AgentConfig(
