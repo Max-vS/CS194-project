@@ -49,7 +49,9 @@ def st_play_audio_openai(text):
             voice="alloy",
             input=f"{text}"
         )
-        response.stream_to_file(filepath) 
+        with open(filepath, 'wb') as f:
+            for chunk in response.iter_bytes():
+                f.write(chunk)
     return filepath
 
 

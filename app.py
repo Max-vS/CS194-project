@@ -1,12 +1,11 @@
 from config.settings import FOI_OPTIONS
-from utils.audio import st_play_audio, st_play_audio_openai, st_transcribe_audio
+from utils.audio import st_play_audio, st_transcribe_audio
 from agents.agent_configs import AgentType
 from agents.groupchat import create_group_chat
 from agents.factory import create_agent
 import os
 import sys
 import tempfile
-from time import sleep
 import streamlit as st
 from audiorecorder import audiorecorder
 
