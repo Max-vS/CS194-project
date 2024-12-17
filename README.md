@@ -40,6 +40,12 @@ git clone https://github.com/yourusername/CS194-project.git
 cd CS194-project
 ```
 
+Navigate to the main branch:
+
+```bash
+git checkout main
+```
+
 Create a Conda environment:
 
 ```bash
