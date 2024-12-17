@@ -1,5 +1,5 @@
 from config.settings import FOI_OPTIONS
-from utils.audio import st_play_audio, st_transcribe_audio
+from utils.audio import st_play_audio, st_transcribe_audio, st_play_audio_openai, st_play_audio_openai_64
 from agents.agent_configs import AgentType
 from agents.groupchat import create_group_chat
 from agents.factory import create_agent
@@ -31,9 +31,9 @@ def initialize_session_state():
 def run_streamlit_app():
     # Configure Streamlit page settings
     st.set_page_config(
-        page_title="CasePilot - Case Interview Practice", layout="wide")
+        page_title="CasePilot: Case Interview Platform", layout="wide")
 
-    st.title("CasePilot - Case Interview Practice")
+    st.title("CasePilot - Case Interview Platform")
     st.markdown("---")
 
     # Initialize session state
@@ -96,13 +96,15 @@ def run_streamlit_app():
                 with st.chat_message("assistant"):
                     st.write(message["content"])
 
-                    # Add TTS only for messages starting with QUESTION or FOLLOWUP
+                    # Add TTS only for messages starting with QUESTION or FOLLOWUP 
                     if (
                         message["content"].startswith("QUESTION") or
                         message["content"].startswith("FOLLOW-UP")
                     ):
-                        question_tts = st_play_audio(message["content"])
-                        st.audio(question_tts, format="mp3", autoplay=1)
+                        st.markdown(st_play_audio_openai_64(message["content"]), unsafe_allow_html=True)    # openai alloy autoplay=True
+                        # question_tts = st_play_audio_openai(message['content'])                           # openai alloy
+                        # question_tts = st_play_audio(message["content"])                                  # gtts
+                        # st.audio(question_tts, format="mp3", autoplay=1)
 
                     if message["name"] == "feedback_agent":
                         st.session_state.status = "feedback"
