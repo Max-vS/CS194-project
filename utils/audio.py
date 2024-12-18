@@ -90,8 +90,7 @@ def st_play_audio_openai_64(text):
 
 def st_transcribe_audio(filename):
     if not os.path.exists(filename):
-        print(f"Error: {
-              filename} not found. Please ensure the recording was saved correctly.")
+        print(f"Error: {filename} not found. Please ensure the recording was saved correctly.")
         return ""
     try:
         whisper_stt = whisper_model.transcribe(filename, language='en')
