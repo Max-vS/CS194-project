@@ -82,6 +82,7 @@ SYSTEM_MESSAGES = {
     - reply with "FEEDBACK" only
 
     Guidelines:
+    - Everything you reply to the user has to either be a question or a follow-up question and formatted as such.
     - Maintain a professional yet engaging interview tone
     - Ask only one main question at a time
     - Ask only one follow-up question at a time
